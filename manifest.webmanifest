@@ -1,0 +1,17 @@
+{
+  "name": "Quest Belajar",
+  "short_name": "Quest Belajar",
+  "description": "Belajar seru bersama Tes si tetes air: quest Islam, Matematika, Bahasa, dan Sains.",
+  "lang": "id",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#EEF5F6",
+  "theme_color": "#1E7488",
+  "icons": [
+    { "src": "assets/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "assets/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "assets/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

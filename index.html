@@ -1,0 +1,661 @@
+<!doctype html>
+<html lang="id">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Quest Belajar</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="theme-color" content="#1E7488">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="assets/icons/icon-192.png">
+<link rel="apple-touch-icon" href="assets/icons/icon-192.png">
+<style>
+/* Fonts are bundled (OFL) so the installed app looks right offline. */
+@font-face{font-family:"Baloo 2";font-weight:400 800;font-display:swap;src:url(assets/fonts/baloo2-latin.woff2) format("woff2")}
+@font-face{font-family:"Nunito";font-weight:200 1000;font-display:swap;src:url(assets/fonts/nunito-latin.woff2) format("woff2")}
+/* Mascot is "Tes", the water drop from quest 3. Layout: a quiet water-and-lantern world. Single column, big touch targets for a child's tablet; parent tools share the same shell. */
+:root{
+  --bg:#EEF5F6; --surface:#FFFFFF; --sunk:#E2EEF0; --ink:#12303A; --muted:#55707A; --line:#CFE0E4;
+  --water:#1E7488; --water-ink:#FFFFFF; --deep:#0F4C5C; --lantern:#D99A1E; --lantern-soft:#F6E3B8;
+  --ok:#2E8457; --ok-soft:#DDF1E5; --warn:#B5532F; --warn-soft:#F8E3DA;
+  --s-islam:#2E8457; --s-mtk:#3561B0; --s-bahasa:#B5532F; --s-sains:#7651AC;
+  --display:"Baloo 2","Trebuchet MS",system-ui,sans-serif;
+  --body:"Nunito","Segoe UI",system-ui,sans-serif;
+  --r:18px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0C1A1F; --surface:#13282F; --sunk:#0F2127; --ink:#E4F0F2; --muted:#8EA9B1; --line:#21404A;
+  --water:#4BB0C4; --water-ink:#08252D; --deep:#A6DCE6; --lantern:#F0BE4C; --lantern-soft:#4A3B17;
+  --ok:#69C489; --ok-soft:#173A27; --warn:#E58A66; --warn-soft:#41231A;
+  --s-islam:#69C489; --s-mtk:#86A8EC; --s-bahasa:#E58A66; --s-sains:#B59AE6; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0C1A1F; --surface:#13282F; --sunk:#0F2127; --ink:#E4F0F2; --muted:#8EA9B1; --line:#21404A;
+  --water:#4BB0C4; --water-ink:#08252D; --deep:#A6DCE6; --lantern:#F0BE4C; --lantern-soft:#4A3B17;
+  --ok:#69C489; --ok-soft:#173A27; --warn:#E58A66; --warn-soft:#41231A;
+  --s-islam:#69C489; --s-mtk:#86A8EC; --s-bahasa:#E58A66; --s-sains:#B59AE6; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.55;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:12px 40px}
+.wrap{max-width:760px;margin:0 auto;display:flex;flex-direction:column;gap:18px}
+h1,h2,h3{font-family:var(--display);line-height:1.15;margin:0;text-wrap:balance}
+h1{font-size:1.7rem;font-weight:800;color:var(--deep)}
+h2{font-size:1.35rem;font-weight:700}
+h3{font-size:1.1rem;font-weight:700}
+p{margin:0}
+button{font:inherit;cursor:pointer;color:inherit}
+button:focus-visible,input:focus-visible,textarea:focus-visible,label:focus-within{outline:3px solid var(--lantern);outline-offset:2px}
+.muted{color:var(--muted)}
+.small{font-size:.88rem}
+.eyebrow{font-size:.78rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+
+/* Header */
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:10px}
+.drop{width:34px;height:34px;flex:none}
+.mode{border:2px solid var(--line);background:var(--surface);border-radius:999px;padding:8px 16px;font-weight:700;min-height:44px}
+.tabs{display:flex;gap:8px;flex-wrap:wrap}
+.tab{border:none;background:var(--sunk);border-radius:999px;padding:10px 18px;font-weight:800;min-height:48px;color:var(--muted)}
+.tab[aria-current="true"]{background:var(--water);color:var(--water-ink)}
+.banner{background:var(--lantern-soft);border-radius:12px;padding:10px 14px;font-size:.92rem}
+
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:18px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.row{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.spread{justify-content:space-between}
+.btn{border:none;border-radius:14px;padding:12px 20px;font-weight:800;min-height:52px;background:var(--water);color:var(--water-ink);font-size:1.02rem}
+.btn.ghost{background:var(--sunk);color:var(--ink)}
+.btn.ok{background:var(--ok);color:var(--surface)}
+.btn.warn{background:var(--warn-soft);color:var(--warn)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+
+/* Lanterns */
+.lanterns{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:10px}
+.lamp{border:2px solid var(--line);background:var(--sunk);border-radius:16px;padding:12px 6px 10px;display:flex;flex-direction:column;align-items:center;gap:6px;min-height:112px;font-weight:800;font-size:.95rem}
+.lamp svg{width:38px;height:44px}
+.lamp .glass{fill:var(--line)}
+.lamp .frame{fill:var(--muted)}
+.lamp[data-s="child"]{border-color:var(--lantern)}
+.lamp[data-s="child"] .glass{fill:var(--lantern-soft)}
+.lamp[data-s="confirmed"]{border-color:var(--lantern);background:var(--lantern-soft)}
+.lamp[data-s="confirmed"] .glass{fill:var(--lantern)}
+.lamp .st{font-size:.75rem;font-weight:700;color:var(--muted)}
+.week{display:flex;gap:8px;flex-wrap:wrap}
+.night{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:.75rem;color:var(--muted);min-width:38px}
+.night i{display:block;width:26px;height:26px;border-radius:50%;background:var(--lantern);border:2px solid var(--lantern)}
+
+/* Stars */
+.stars{display:inline-flex;align-items:center;gap:6px;font-family:var(--display);font-weight:800;font-size:1.3rem;color:var(--lantern)}
+.star{width:22px;height:22px;fill:var(--lantern)}
+
+/* Map */
+.map{display:flex;flex-direction:column;gap:4px;padding-block:6px}
+.stop{display:flex;align-items:center;gap:14px;border:none;background:none;padding:6px;text-align:left;border-radius:16px;width:fit-content;max-width:100%}
+.stop:disabled{cursor:default}
+.stop[data-pos="1"]{margin-left:18%}
+.stop[data-pos="2"]{margin-left:36%}
+@media (max-width:520px){.stop[data-pos="1"]{margin-left:10%}.stop[data-pos="2"]{margin-left:20%}}
+.node{width:66px;height:66px;border-radius:50%;flex:none;display:grid;place-items:center;font-family:var(--display);font-weight:800;font-size:1.4rem;border:4px solid var(--c);color:var(--c);background:var(--surface)}
+.stop[data-st="done"] .node{background:var(--c);color:var(--surface)}
+.stop[data-st="locked"] .node{border-color:var(--line);color:var(--muted);background:var(--sunk)}
+.stop[data-st="open"] .node,.stop[data-st="retry"] .node{box-shadow:0 0 0 6px color-mix(in srgb,var(--c) 25%,transparent)}
+.stop .lbl{display:flex;flex-direction:column;min-width:0}
+.stop .lbl b{font-family:var(--display);font-size:1.08rem}
+.pip{height:14px;width:2px;margin-left:calc(var(--x,0%) + 38px);border-left:3px dotted var(--line)}
+.chip{display:inline-block;border-radius:999px;padding:2px 10px;font-size:.78rem;font-weight:800;background:color-mix(in srgb,var(--c) 16%,transparent);color:var(--c)}
+.state{font-size:.82rem;font-weight:800}
+.state.review{color:var(--lantern)}
+.state.retry{color:var(--warn)}
+.state.done{color:var(--ok)}
+
+/* Quest */
+.step{border-left:5px solid var(--c);padding-left:14px;display:flex;flex-direction:column;gap:8px}
+.step ol,.step ul{margin:0;padding-left:1.3em;display:flex;flex-direction:column;gap:4px}
+.hook{font-size:1.12rem;line-height:1.7;max-width:65ch}
+.src{font-size:.85rem;color:var(--muted)}
+.verify{display:inline-block;margin-left:6px;font-size:.72rem;font-weight:800;color:var(--warn);background:var(--warn-soft);border-radius:6px;padding:1px 6px}
+.safety{background:var(--warn-soft);color:var(--warn);border-radius:12px;padding:10px 14px;font-weight:800}
+.check{display:flex;align-items:center;gap:12px;border:2px solid var(--line);border-radius:14px;padding:12px 14px;font-weight:800;cursor:pointer;min-height:52px}
+.check input{width:26px;height:26px;accent-color:var(--ok)}
+.check:has(input:checked){border-color:var(--ok);background:var(--ok-soft)}
+.q{display:flex;flex-direction:column;gap:8px}
+.q p{font-weight:800}
+.opts{display:grid;gap:8px}
+.opt{border:2px solid var(--line);background:var(--surface);border-radius:14px;padding:12px 14px;text-align:left;font-weight:700;min-height:52px}
+.opt[data-r="right"]{border-color:var(--ok);background:var(--ok-soft)}
+.opt[data-r="wrong"]{border-color:var(--warn);background:var(--warn-soft)}
+.fb{font-size:.92rem;font-weight:800}
+.fb.right{color:var(--ok)}.fb.wrong{color:var(--warn)}
+.photo{width:100%;max-width:420px;border-radius:14px;border:1px solid var(--line);background:var(--sunk);aspect-ratio:4/3;object-fit:cover}
+.file{display:inline-flex;align-items:center;justify-content:center;border:2px dashed var(--water);color:var(--water);border-radius:14px;padding:14px 20px;font-weight:800;cursor:pointer;min-height:52px}
+.file input{position:absolute;opacity:0;width:1px;height:1px}
+details{border-top:1px solid var(--line);padding-top:10px}
+summary{cursor:pointer;font-weight:800;color:var(--muted)}
+.note{background:var(--warn-soft);border-radius:12px;padding:10px 14px}
+
+/* Badges */
+.badges{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+.badge{border:2px solid var(--line);border-radius:var(--r);padding:16px 12px;display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;background:var(--surface)}
+.badge .medal{width:64px;height:64px;border-radius:50%;display:grid;place-items:center;background:var(--sunk);border:4px dashed var(--line)}
+.badge.on .medal{background:var(--c);border:4px solid color-mix(in srgb,var(--c) 40%,var(--surface))}
+.badge .medal svg{width:30px;height:30px;fill:var(--muted)}
+.badge.on .medal svg{fill:var(--surface)}
+.badge.on{border-color:var(--c)}
+
+/* Parent */
+input[type=text],input[type=password],textarea{font:inherit;width:100%;border:2px solid var(--line);border-radius:12px;padding:10px 12px;background:var(--surface);color:var(--ink)}
+.pin{max-width:220px;font-size:1.6rem;letter-spacing:.4em;text-align:center}
+.review{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px}
+@media (max-width:620px){.review{grid-template-columns:1fr}}
+table{border-collapse:collapse;width:100%;font-size:.92rem}
+td,th{text-align:left;padding:8px 6px;border-bottom:1px solid var(--line);vertical-align:top}
+.tablewrap{overflow-x:auto}
+.empty{text-align:center;padding:26px 12px;color:var(--muted)}
+/* Mascot "Tetes" + one-shot effects. Continuous motion lives in CSS; one-shot effects are added by JS after render, because render() rebuilds the view. */
+.buddy{display:flex;align-items:flex-end;gap:10px;min-width:0}
+.tetes{width:84px;height:92px;flex:none;overflow:visible}
+.tetes .shadow{fill:var(--ink);opacity:.12}
+.bubble{position:relative;background:var(--sunk);border-radius:18px;padding:12px 16px;font-weight:700;font-size:1.05rem;margin-bottom:24px;max-width:46ch}
+.bubble::before{content:"";position:absolute;left:-9px;bottom:14px;border:10px solid transparent;border-right-color:var(--sunk);border-left:0}
+.fx{position:fixed;inset:0;width:100vw;height:100vh;pointer-events:none;z-index:40}
+.fly{position:fixed;left:-14px;top:-14px;width:28px;height:28px;pointer-events:none;z-index:50}
+.fly .star{width:28px;height:28px}
+.lamp .flame{fill:transparent;transform-box:fill-box;transform-origin:50% 100%}
+.lamp[data-s="child"] .flame{fill:var(--lantern);opacity:.6}
+.lamp[data-s="confirmed"] .flame{fill:#FFF3C4}
+.say{flex:none;width:48px;height:48px;border-radius:50%;border:none;background:var(--water);display:grid;place-items:center;padding:0}
+.say svg{width:26px;height:26px;fill:var(--water-ink)}
+.say.on{background:var(--lantern)}
+.saybar{display:flex;align-items:center;gap:10px}
+.saybar>:first-child{flex:1;min-width:0}
+.art{display:block;width:100%;max-height:280px;object-fit:cover;border-radius:14px;background:var(--sunk)}
+.thumb{width:56px;height:56px;border-radius:12px;object-fit:cover;flex:none;background:var(--sunk)}
+.tetesbtn{border:none;background:none;padding:0;border-radius:50%;flex:none}
+.toggles{display:flex;flex-direction:column;gap:8px;max-width:360px}
+@media (prefers-reduced-motion:no-preference){
+  .stop[data-st="open"] .node{animation:breathe 2.4s ease-in-out infinite}
+  @keyframes breathe{50%{box-shadow:0 0 0 11px color-mix(in srgb,var(--c) 14%,transparent)}}
+  html:not(.nomo) .enter>*{animation:rise .42s cubic-bezier(.2,.8,.3,1.2) both}
+  html:not(.nomo) .enter>*:nth-child(2){animation-delay:.07s}
+  html:not(.nomo) .enter>*:nth-child(3){animation-delay:.14s}
+  html:not(.nomo) .enter>*:nth-child(n+4){animation-delay:.21s}
+  html:not(.nomo) .enter .stop,html:not(.nomo) .enter .badge{animation:popin .45s cubic-bezier(.2,.8,.3,1.4) both;animation-delay:calc(var(--i,0) * 70ms + .1s)}
+  html:not(.nomo) .tetes .body{animation:float 3.2s ease-in-out infinite;transform-box:fill-box;transform-origin:50% 100%}
+  html:not(.nomo) .tetes .shadow{animation:shadow 3.2s ease-in-out infinite;transform-box:fill-box;transform-origin:center}
+  html:not(.nomo) .tetes .eyes{animation:blink 4.5s infinite;transform-box:fill-box;transform-origin:center}
+  html:not(.nomo) .tetes.jump .body{animation:jump .65s cubic-bezier(.3,1.6,.5,1)}
+  html:not(.nomo) .tetes.tilt .body{animation:tilt .6s ease-in-out}
+  html:not(.nomo) .opt.pop{animation:pop .4s cubic-bezier(.3,1.8,.5,1)}
+  html:not(.nomo) .opt.shake{animation:shake .45s}
+  html:not(.nomo) .say.on{animation:pulse 1s ease-in-out infinite}
+  @keyframes pulse{50%{box-shadow:0 0 0 9px color-mix(in srgb,var(--lantern) 30%,transparent)}}
+  html:not(.nomo) .nudge{animation:nudge 3.5s ease-in-out infinite}
+  html:not(.nomo) .lamp[data-s="confirmed"] .flame{animation:flicker 1.3s ease-in-out infinite alternate}
+  html:not(.nomo) .lamp.lit{animation:glow .8s ease-out}
+  html:not(.nomo) .badge.on .medal{animation:shine 3s ease-in-out infinite}
+  html:not(.nomo) .badge.new{animation:spinin .9s cubic-bezier(.2,.8,.3,1.3) both}
+  @keyframes rise{from{opacity:0;transform:translateY(14px)}}
+  @keyframes popin{from{opacity:0;transform:scale(.6)}}
+  @keyframes float{50%{transform:translateY(-7px)}}
+  @keyframes shadow{50%{transform:scaleX(.78);opacity:.07}}
+  @keyframes blink{0%,90%,100%{transform:scaleY(1)}94%{transform:scaleY(.1)}}
+  @keyframes jump{25%{transform:scale(1.12,.86)}55%{transform:translateY(-26px) scale(.92,1.1)}80%{transform:scale(1.08,.92)}}
+  @keyframes tilt{25%{transform:rotate(-9deg)}60%{transform:rotate(7deg)}}
+  @keyframes pop{40%{transform:scale(1.07)}}
+  @keyframes shake{20%,60%{transform:translateX(-7px)}40%,80%{transform:translateX(7px)}}
+  @keyframes nudge{0%,80%,100%{transform:none}85%{transform:rotate(-3deg) scale(1.05)}90%{transform:rotate(3deg) scale(1.05)}95%{transform:rotate(-2deg)}}
+  @keyframes flicker{to{transform:scale(.86,1.1) translateY(-1px)}}
+  @keyframes glow{from{box-shadow:0 0 0 0 var(--lantern)}to{box-shadow:0 0 0 18px transparent}}
+  @keyframes shine{50%{box-shadow:0 0 18px 2px color-mix(in srgb,var(--c) 55%,transparent)}}
+  @keyframes spinin{from{opacity:0;transform:rotate(-200deg) scale(.3)}}
+}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <svg class="drop" viewBox="0 0 34 34" aria-hidden="true"><path d="M17 3C17 3 6 15.5 6 22a11 11 0 0 0 22 0C28 15.5 17 3 17 3z" fill="var(--water)"/><path d="M12 22a5 5 0 0 0 5 5" stroke="var(--surface)" stroke-width="2.4" fill="none" stroke-linecap="round"/></svg>
+      <div><h1>Quest Belajar</h1><div class="small muted" id="themeName">Memuat tema…</div></div>
+    </div>
+    <button class="mode" id="modeBtn" data-act="toggleMode">Mode Orang Tua</button>
+  </header>
+  <nav class="tabs" id="tabs" aria-label="Menu"></nav>
+  <div id="banner" class="banner" hidden></div>
+  <main id="view" class="wrap" style="max-width:none"></main>
+</div>
+
+<script src="quests.js"></script>
+<script>
+(function(){
+"use strict";
+const HABITS=[["subuh","Subuh"],["dzuhur","Dzuhur"],["ashar","Ashar"],["maghrib","Maghrib"],["isya","Isya"],["tilawah","Tilawah / Iqro'"],["doa","Doa harian"]];
+const DAYS=["Min","Sen","Sel","Rab","Kam","Jum","Sab"];
+const S={content:null,subs:{},habits:{},settings:{},mode:"child",view:"today",questId:null,parentOk:false,ptab:"review",q:{},note:"",readonly:false,local:false,busyUpload:false};
+let db=null,assets=null;
+
+/* ---------- helpers ---------- */
+const $=s=>document.querySelector(s);
+const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const dkey=(d=new Date())=>d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+const starSvg='<svg class="star" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.9 6.6 7.1.6-5.4 4.7 1.6 7L12 17.3 5.8 21l1.6-7L2 9.2l7.1-.6z"/></svg>';
+const lampSvg='<svg viewBox="0 0 38 44" aria-hidden="true"><rect class="frame" x="15" y="1" width="8" height="4" rx="2"/><path class="frame" d="M9 7h20l-2 4H11z"/><path class="glass" d="M11 11h16c2 6 2 18 0 24H11c-2-6-2-18 0-24z"/><path class="flame" d="M19 16c3 4 4.5 7 4.5 10a4.5 4.5 0 0 1-9 0c0-3 1.5-6 4.5-10z"/><path class="frame" d="M9 35h20l-2 5H11z"/></svg>';
+const medalSvg='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2C12 2 5 10 5 14.5a7 7 0 0 0 14 0C19 10 12 2 12 2z"/></svg>';
+const art=(id,cls)=>`<img class="${cls}" src="assets/img/${id}.webp" alt="" loading="lazy" onerror="this.remove()">`;
+const quests=()=>S.content?S.content.quests:[];
+const strandColor=s=>"var(--s-"+s+")";
+const statusOf=id=>(S.subs[id]&&S.subs[id].status)||"none";
+const curIndex=()=>{const q=quests();for(let i=0;i<q.length;i++)if(statusOf(q[i].id)!=="approved")return i;return q.length};
+function questState(i){const q=quests()[i],st=statusOf(q.id),c=curIndex();
+  if(st==="approved")return"done"; if(i>c)return"locked"; if(st==="pending")return"review"; if(st==="retry")return"retry"; return"open"}
+const starsTotal=()=>quests().reduce((a,q)=>a+(statusOf(q.id)==="approved"?(q.stars||0):0),0);
+const localPhotos={};
+const photoSrc=sub=>sub?(sub.photoId?"/_blob/"+sub.photoId:sub.photoLocal?(localPhotos[sub.questId]||""):(sub.photoData||"")):"";
+const childName=()=>S.settings.childName||"Sahabat";
+function setNote(t){S.note=t;renderBanner()}
+const lsGet=(k,d)=>{try{const v=localStorage.getItem(k);return v===null?d:JSON.parse(v)}catch(e){return d}};
+const lsSet=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
+
+/* ---------- mascot ---------- */
+function mascot(mood){
+  const ink="#12303A",line=`stroke="${ink}" stroke-width="3.5" fill="none" stroke-linecap="round"`;
+  const mouth={happy:`<path d="M50 96q10 9 20 0" ${line}/>`,cheer:`<path d="M47 93q13 18 26 0z" fill="${ink}"/><path d="M53 99q7 5 14 0" fill="#F29C9C"/>`,
+    think:`<path d="M54 99q7-4 13 0" ${line}/>`,cheerup:`<path d="M50 95q10 8 20 0" ${line}/>`}[mood];
+  const arms={cheer:`<path d="M24 80L8 58M96 80l16-22" stroke="var(--water)" stroke-width="8" stroke-linecap="round"/>`,
+    cheerup:`<path d="M96 82l14-18" stroke="var(--water)" stroke-width="8" stroke-linecap="round"/><circle cx="111" cy="61" r="6.5" fill="var(--water)"/>`,
+    think:`<path d="M28 92q-8 6 4 10" stroke="var(--water)" stroke-width="7" fill="none" stroke-linecap="round"/>`}[mood]||"";
+  const extra=mood==="cheer"?`<path d="M14 30l3 7 7 3-7 3-3 7-3-7-7-3 7-3zM104 16l2 5 5 2-5 2-2 5-2-5-5-2 5-2z" fill="var(--lantern)"/>`
+    :mood==="think"?`<path d="M66 64q8-5 14 0" stroke="${ink}" stroke-width="3" fill="none" stroke-linecap="round"/>`:"";
+  const y=mood==="think"?76:80;
+  return `<svg class="tetes" viewBox="0 0 120 130" aria-hidden="true"><ellipse class="shadow" cx="60" cy="125" rx="30" ry="5"/><g class="body">${arms}
+    <path d="M60 6C60 6 18 54 18 84a42 42 0 0 0 84 0C102 54 60 6 60 6z" fill="var(--water)"/>
+    <path d="M34 74c-4 8-5 16-2 26" stroke="#fff" stroke-opacity=".5" stroke-width="6" fill="none" stroke-linecap="round"/>
+    <g class="eyes"><circle cx="47" cy="${y}" r="6.5" fill="${ink}"/><circle cx="73" cy="${y}" r="6.5" fill="${ink}"/><circle cx="49" cy="${y-2}" r="2.2" fill="#fff"/><circle cx="75" cy="${y-2}" r="2.2" fill="#fff"/></g>
+    <ellipse cx="38" cy="95" rx="6" ry="3.5" fill="#F29C9C" opacity=".7"/><ellipse cx="82" cy="95" rx="6" ry="3.5" fill="#F29C9C" opacity=".7"/>${mouth}${extra}</g></svg>`;
+}
+const buddy=(mood,text)=>`<div class="buddy"><button class="tetesbtn" data-act="say" data-t="${esc(text)}" aria-label="Ketuk Tes untuk mendengar">${mascot(mood)}</button><p class="bubble">${esc(text)}</p></div>`;
+
+/* ---------- narration: recorded clip if present, else the device voice ---------- */
+const speakerSvg='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z"/><path d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" style="color:var(--water-ink)"/></svg>';
+const say=(key,text)=>`<button class="say" data-act="say" data-k="${esc(key||"")}" data-t="${esc(text)}" aria-label="Dengarkan">${speakerSvg}</button>`;
+const listText=a=>a.length>1?a.slice(0,-1).join(", ")+", atau "+a[a.length-1]:a.join("");
+const qText=qq=>qq.say||qq.q+" Pilihannya: "+listText(qq.options)+".";
+let curAudio=null;
+function stopSpeech(){if(curAudio){curAudio.pause();curAudio=null}try{speechSynthesis.cancel()}catch(e){}document.querySelectorAll(".say.on").forEach(b=>b.classList.remove("on"))}
+function tts(text,btn){
+  try{const u=new SpeechSynthesisUtterance(text);u.lang="id-ID";u.rate=.9;
+    const v=speechSynthesis.getVoices().find(v=>/^id/i.test(v.lang));if(v)u.voice=v;
+    u.onend=u.onerror=()=>btn&&btn.classList.remove("on");speechSynthesis.speak(u)}catch(e){btn&&btn.classList.remove("on")}
+}
+function speak(key,text,btn){
+  stopSpeech();if(btn)btn.classList.add("on");
+  if(!key){tts(text,btn);return}
+  const a=new Audio("assets/audio/"+key+".mp3");curAudio=a;
+  const fallback=()=>{if(curAudio===a){curAudio=null;tts(text,btn)}};
+  a.onended=()=>{if(curAudio===a)curAudio=null;btn&&btn.classList.remove("on")};
+  a.onerror=fallback;a.play().catch(fallback);
+}
+
+/* ---------- effects: sound (WebAudio, no files) + motion ---------- */
+const motionOn=()=>S.settings.motion!==false&&!matchMedia("(prefers-reduced-motion: reduce)").matches;
+let AC=null;
+const SFX={ding:[[880,.14],[1320,.32]],pop:[[600,.09,"triangle",.15,900]],boop:[[260,.18,"sine",.16,180],[200,.24,"sine",.12]],
+  whoosh:[[380,.4,"sine",.12,1300]],fanfare:[[523,.14],[659,.14],[784,.14],[1047,.45]],star:[[1500,.08,"triangle",.07]]};
+function sfx(name){
+  if(S.settings.sound===false)return;
+  try{AC=AC||new(window.AudioContext||window.webkitAudioContext)();if(AC.state==="suspended")AC.resume();
+    let t=AC.currentTime;
+    for(const[f,d,type="sine",vol=.18,glide]of SFX[name]){const o=AC.createOscillator(),g=AC.createGain();
+      o.type=type;o.frequency.setValueAtTime(f,t);if(glide)o.frequency.exponentialRampToValueAtTime(glide,t+d);
+      g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(vol,t+.02);g.gain.exponentialRampToValueAtTime(.0001,t+d);
+      o.connect(g).connect(AC.destination);o.start(t);o.stop(t+d+.03);t+=d*.75}
+  }catch(e){}
+}
+const ctr=el=>{const b=el.getBoundingClientRect();return[b.left+b.width/2,b.top+b.height/2]};
+function oneShot(el,cls){if(!el||!motionOn())return;el.classList.remove(cls);void el.offsetWidth;el.classList.add(cls);setTimeout(()=>el.classList.remove(cls),900)}
+const tetes=cls=>oneShot(document.querySelector(".tetes"),cls);
+function confetti(x,y,n=36){
+  if(!motionOn())return;
+  const cv=document.createElement("canvas"),dpr=window.devicePixelRatio||1,W=innerWidth,H=innerHeight;
+  cv.className="fx";cv.width=W*dpr;cv.height=H*dpr;document.body.appendChild(cv);
+  const c=cv.getContext("2d");c.scale(dpr,dpr);
+  const cs=getComputedStyle(document.documentElement),cols=["--water","--lantern","--s-islam","--s-mtk","--s-sains"].map(v=>cs.getPropertyValue(v).trim());
+  const P=Array.from({length:n},(_,i)=>({x,y,vx:(Math.random()-.5)*10,vy:-Math.random()*9-4,r:Math.random()*5+5,a:Math.random()*6,va:(Math.random()-.5)*.3,k:i%3,col:cols[i%cols.length]}));
+  const t0=performance.now();
+  (function frame(now){const el=now-t0;c.clearRect(0,0,W,H);c.globalAlpha=Math.max(0,1-el/1600);
+    for(const p of P){p.vy+=.28;p.vx*=.99;p.x+=p.vx;p.y+=p.vy;p.a+=p.va;c.save();c.translate(p.x,p.y);c.rotate(p.a);c.fillStyle=p.col;c.beginPath();
+      if(p.k===0){c.moveTo(0,-p.r);c.bezierCurveTo(p.r*.9,0,p.r*.7,p.r,0,p.r);c.bezierCurveTo(-p.r*.7,p.r,-p.r*.9,0,0,-p.r)}
+      else if(p.k===1){for(let i=0;i<10;i++){const a=i*Math.PI/5-Math.PI/2,rr=i%2?p.r*.45:p.r;c.lineTo(Math.cos(a)*rr,Math.sin(a)*rr)}}
+      else c.rect(-p.r/2,-p.r/4,p.r,p.r/2);
+      c.fill();c.restore()}
+    if(el<1600)requestAnimationFrame(frame);else cv.remove()})(t0);
+}
+/* Stars approved since the child last looked fly into the counter, one by one. */
+function rewardStars(){
+  const box=$("#starCount");if(!box)return;
+  const total=starsTotal(),seen=lsGet("qbSeenStars",0);
+  if(total<=seen){if(total<seen)lsSet("qbSeenStars",total);return}
+  lsSet("qbSeenStars",total);sfx("fanfare");tetes("jump");
+  if(!motionOn())return;
+  const num=box.querySelector("b"),to=ctr(box),from=[innerWidth/2,innerHeight*.55];let cur=seen;num.textContent=seen;
+  for(let i=0;i<total-seen;i++){const s=document.createElement("div");s.className="fly";s.innerHTML=starSvg;document.body.appendChild(s);
+    s.animate([{transform:`translate(${from[0]}px,${from[1]}px) scale(.4)`,opacity:0},
+      {transform:`translate(${from[0]+(Math.random()-.5)*180}px,${from[1]-130}px) scale(1.6)`,opacity:1,offset:.4},
+      {transform:`translate(${to[0]}px,${to[1]}px) scale(.8)`,opacity:1}],{duration:900,delay:i*170,easing:"ease-in-out",fill:"forwards"})
+      .onfinish=()=>{s.remove();num.textContent=++cur;sfx("star");box.animate([{transform:"scale(1)"},{transform:"scale(1.3)"},{transform:"scale(1)"}],{duration:250})}}
+}
+/* Badges earned since the child last looked spin in with confetti. */
+function newBadges(){
+  const on=badgeList().filter(b=>b.on).map(b=>b.name),seen=lsGet("qbSeenBadges",[]),fresh=on.filter(n=>!seen.includes(n));
+  if(!fresh.length)return;lsSet("qbSeenBadges",on);sfx("fanfare");
+  document.querySelectorAll(".badge.on").forEach(el=>{if(fresh.includes(el.dataset.b)&&motionOn()){el.classList.add("new");const[x,y]=ctr(el);setTimeout(()=>confetti(x,y,40),500)}});
+}
+
+/* ---------- storage ---------- */
+/* On-device photos live in IndexedDB (room for many photos); localStorage keeps only small progress data. */
+const idb=()=>new Promise((res,rej)=>{const r=indexedDB.open("questBelajar",1);r.onupgradeneeded=()=>r.result.createObjectStore("photos");r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)});
+async function idbPut(k,v){const d=await idb();return new Promise((res,rej)=>{const t=d.transaction("photos","readwrite");t.objectStore("photos").put(v,k);t.oncomplete=res;t.onerror=()=>rej(t.error)})}
+async function idbAll(){const d=await idb();return new Promise((res,rej)=>{const out={},rq=d.transaction("photos").objectStore("photos").openCursor();
+  rq.onsuccess=()=>{const c=rq.result;if(c){out[c.key]=c.value;c.continue()}else res(out)};rq.onerror=()=>rej(rq.error)})}
+function showLocalPhoto(id,blob){if(localPhotos[id])URL.revokeObjectURL(localPhotos[id]);localPhotos[id]=URL.createObjectURL(blob)}
+function loadLocal(){try{const o=JSON.parse(localStorage.getItem("questBelajar")||"{}");S.subs=o.subs||{};S.habits=o.habits||{};S.settings=o.settings||{}}catch(e){}}
+function saveLocal(){try{localStorage.setItem("questBelajar",JSON.stringify({subs:S.subs,habits:S.habits,settings:S.settings}))}catch(e){setNote("Penyimpanan di perangkat ini penuh atau diblokir.")}}
+const pend={},busy={};
+function write(path,data){
+  if(!db){saveLocal();return}
+  pend[path]=data; if(busy[path])return; busy[path]=true;
+  (async()=>{while(pend[path]!==undefined){const d=pend[path];pend[path]=undefined;
+    try{await db.doc(path).set(d)}catch(e){
+      if(e&&e.code==="unavailable"){await new Promise(r=>setTimeout(r,800+Math.random()*800));try{await db.doc(path).set(d);continue}catch(e2){e=e2}}
+      if(e&&e.code==="invalid_argument"){S.readonly=true;setNote("Akun ini hanya bisa melihat. Perubahan tidak tersimpan.")}
+      else if(e&&e.code==="quota_exceeded"){setNote("Penyimpanan aplikasi penuh. Hapus beberapa data lama.")}
+      else setNote("Gagal menyimpan. Periksa koneksi internet, lalu coba lagi.");
+    }}busy[path]=false})();
+}
+function saveSub(id,data){S.subs[id]=data;render();write("submissions/"+id,data)}
+function saveHabitDay(date,items){S.habits[date]={date,items};render();write("habits/"+date,{date,items})}
+function saveSettings(o){S.settings=Object.assign({},S.settings,o);render();write("settings/main",S.settings)}
+
+/* ---------- data wiring ---------- */
+/* Installed app: register the offline worker and ask it to cache every quest's image and audio. */
+function registerSW(){
+  if(!("serviceWorker" in navigator)||!/^https?:$/.test(location.protocol))return;
+  navigator.serviceWorker.register("sw.js").then(()=>navigator.serviceWorker.ready).then(reg=>{
+    const urls=[];for(const x of quests()){urls.push("assets/img/"+x.id+".webp","assets/audio/"+x.id+"-hook.mp3");x.questions.forEach((_,k)=>urls.push("assets/audio/"+x.id+"-q"+(k+1)+".mp3"))}
+    if(reg.active)reg.active.postMessage({type:"warm",urls});
+  }).catch(()=>{});
+}
+async function boot(){
+  render();
+  const j=window.QUEST_CONTENT;
+  if(j){S.content=j;$("#themeName").textContent=j.theme.title+" · "+j.theme.level;render()}
+  else{$("#themeName").textContent="Isi quest gagal dimuat";setNote("File quests.js tidak ditemukan. Pastikan ada di folder yang sama dengan index.html.")}
+  const cl=window.claude;
+  if(cl&&cl.use){try{[db,assets]=await Promise.all([cl.use("db"),cl.use("assets")])}catch(e){db=null}}
+  if(!db){S.local=true;loadLocal();
+    if(cl)setNote("Mode perangkat ini saja: progres tersimpan di perangkat ini dan tidak tersambung ke HP orang tua.");
+    render();
+    try{const all=await idbAll();for(const k in all)showLocalPhoto(k,all[k]);render()}catch(e){}
+    registerSW();return}
+  let confirmed=false;
+  const timer=setTimeout(()=>{if(!confirmed)setNote("Data belum bisa dijangkau. Tampilan mungkin belum terbaru.")},10000);
+  const ok=m=>{if(!m.fromCache&&!confirmed){confirmed=true;clearTimeout(timer);if(S.note.startsWith("Data belum"))setNote("")}};
+  const err=e=>{clearTimeout(timer);setNote(e&&e.code==="revoked"?"Akses ke data sudah tidak tersedia.":"Sambungan data terputus. Muat ulang halaman.")};
+  db.collection("submissions").onSnapshot(s=>{const o={};s.docs.forEach(d=>{o[d.id]=d.data()});S.subs=o;ok(s.metadata);render()},err);
+  db.collection("habits").onSnapshot(s=>{const o={};s.docs.forEach(d=>{o[d.id]=d.data()});S.habits=o;ok(s.metadata);render()},err);
+  db.doc("settings/main").onSnapshot(d=>{S.settings=d.exists?Object.assign({},d.data()):{};ok(d.metadata);render()},err);
+}
+
+/* ---------- render ---------- */
+function renderBanner(){const b=$("#banner");b.textContent=S.note;b.hidden=!S.note}
+function renderTabs(){
+  const t=S.mode==="child"?[["today","Hari Ini"],["map","Peta Quest"],["badges","Lencana"]]
+    :(S.parentOk?[["review","Periksa"+(pendingCount()?" ("+pendingCount()+")":"")],["ibadah","Ibadah"],["progress","Kemajuan"],["settings","Pengaturan"]]:[]);
+  const cur=S.mode==="child"?(S.view==="quest"?"map":S.view):S.ptab;
+  $("#tabs").innerHTML=t.map(([k,n])=>`<button class="tab" data-act="tab" data-k="${k}" aria-current="${k===cur}">${esc(n)}</button>`).join("");
+  $("#modeBtn").textContent=S.mode==="child"?"Mode Orang Tua":"Kembali ke Mode Anak";
+}
+const pendingCount=()=>Object.values(S.subs).filter(s=>s.status==="pending").length;
+function render(){
+  renderTabs();renderBanner();
+  const v=$("#view");
+  const active=document.activeElement&&document.activeElement.id;
+  const kept={};v.querySelectorAll("textarea[id],input[type=text][id],input[type=password][id]").forEach(f=>{kept[f.id]=f.value});
+  if(S.mode==="parent")v.innerHTML=S.parentOk?parentView():pinView();
+  else if(!S.content)v.innerHTML=`<div class="card empty">Memuat quest…</div>`;
+  else v.innerHTML=S.view==="map"?mapView():S.view==="badges"?badgesView():S.view==="quest"?questView():todayView();
+  for(const k in kept){const f=document.getElementById(k);if(f&&f.tagName!=="SELECT")f.value=kept[k]}
+  if(active){const el=document.getElementById(active);if(el&&el.tagName!=="BUTTON")el.focus()}
+  document.documentElement.classList.toggle("nomo",S.settings.motion===false);
+  const key=[S.mode,S.view,S.ptab,S.questId,S.parentOk,!!S.content].join("|");
+  v.classList.toggle("enter",key!==lastKey);lastKey=key;
+  if(S.mode==="child"&&S.content){if(S.view==="today")rewardStars();if(S.view==="badges")newBadges()}
+}
+let lastKey="";
+
+function habitItems(date){return(S.habits[date]&&S.habits[date].items)||{}}
+function lanternsHTML(date,role){
+  const it=habitItems(date);
+  return `<div class="lanterns">${HABITS.map(([k,n])=>{const s=it[k]||"none";
+    const st=s==="confirmed"?"Menyala":s==="child"?"Sudah, tunggu Ayah/Ibu":(role==="parent"?"Belum":"Ketuk jika sudah");
+    return `<button class="lamp" data-act="${role==="parent"?"confirmHabit":"childHabit"}" data-k="${k}" data-d="${date}" data-s="${s}" aria-label="${esc(n)}: ${esc(st)}">${lampSvg}<span>${esc(n)}</span><span class="st">${esc(st)}</span></button>`}).join("")}</div>`;
+}
+function weekHTML(){
+  let h="";for(let i=6;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);const it=habitItems(dkey(d));
+    const n=HABITS.filter(([k])=>it[k]==="confirmed").length;const a=(0.12+0.88*n/HABITS.length).toFixed(2);
+    h+=`<div class="night"><i style="opacity:${a}" title="${n} dari ${HABITS.length}"></i>${DAYS[d.getDay()]}</div>`}
+  return `<div class="week" aria-label="Lentera 7 hari terakhir">${h}</div>`;
+}
+
+function todayView(){
+  const q=quests(),c=curIndex(),cur=q[c];
+  let qc,mood="happy",greet=`Assalamu'alaikum, ${childName()}! Hari ini ada quest seru. Yuk, kita mulai!`;
+  if(!cur){mood="cheer";greet=`MasyaAllah, ${childName()}! Semua quest tema ini sudah selesai.`;
+    qc=`<h2>Semua quest tema ini selesai!</h2><p>Kamu mendapat lencana <b>${esc(S.content.theme.finalBadge)}</b>. Tunggu tema berikutnya dari Ayah/Ibu.</p>`}
+  else{const st=questState(c);
+    if(st==="review"){mood="think";greet="Fotomu sedang dilihat Ayah/Ibu. Sambil menunggu, nyalakan lenteramu ya!"}
+    if(st==="retry"){mood="cheerup";greet="Ayah/Ibu minta kamu mencoba lagi. Ayo, aku temani. Kamu pasti bisa!"}
+    qc=`${art(cur.id,"art")}<div class="eyebrow">Quest ${c+1} dari ${q.length}</div><h2>${esc(cur.title)}</h2>
+    <p><span class="chip" style="--c:${strandColor(cur.strand)}">${esc(S.content.strands[cur.strand].name)}</span></p>
+    ${st==="review"?`<p class="state review">Fotomu sedang diperiksa Ayah/Ibu. Sambil menunggu, rawat lenteramu.</p>`:""}
+    ${st==="retry"?`<p class="state retry">Ayah/Ibu minta kamu mencoba lagi. Kamu pasti bisa.</p>`:""}
+    <div><button class="btn ${st==="review"?"":"nudge"}" data-act="open" data-id="${cur.id}">${st==="review"?"Lihat quest":"Mulai quest"}</button></div>`}
+  return `<section class="card"><div class="row spread" style="align-items:flex-end">${buddy(mood,greet)}<span class="stars" id="starCount">${starSvg}<b>${starsTotal()}</b></span></div></section>
+  <section class="card">${qc}</section>
+  <section class="card"><div><div class="eyebrow">Lentera hari ini</div><h2>Amalan harianku</h2></div>
+    <p class="muted small">Ketuk lentera kalau sudah kamu kerjakan. Ayah atau Ibu akan menyalakannya penuh.</p>
+    ${lanternsHTML(dkey(),"child")}
+    <div class="eyebrow">7 malam terakhir</div>${weekHTML()}</section>`;
+}
+
+function mapView(){
+  const q=quests(),pos=[0,1,2,1];
+  const items=q.map((x,i)=>{const st=questState(i),c=strandColor(x.strand);
+    const lab={done:`<span class="state done">Selesai · ${x.stars} bintang</span>`,review:`<span class="state review">Sedang diperiksa</span>`,retry:`<span class="state retry">Coba lagi</span>`,open:`<span class="state">Siap dimulai</span>`,locked:`<span class="state muted">Terkunci</span>`}[st];
+    return (i?`<div class="pip" style="--x:${[0,18,36,18][i%4]}%"></div>`:"")+
+    `<button class="stop" data-pos="${pos[i%4]}" data-st="${st}" style="--c:${c};--i:${i}" data-act="open" data-id="${x.id}" ${st==="locked"?"disabled":""}>
+      <span class="node">${st==="done"?"✓":i+1}</span>${art(x.id,"thumb")}<span class="lbl"><b>${esc(x.title)}</b><span class="small muted">${esc(S.content.strands[x.strand].name)}</span>${lab}</span></button>`}).join("");
+  return `<section class="card"><div class="row spread"><div><div class="eyebrow">Tema</div><h2>${esc(S.content.theme.title)}</h2></div><span class="stars">${starSvg}${starsTotal()}</span></div>
+    <p class="muted small">Selesaikan quest satu per satu. Quest berikutnya terbuka setelah Ayah/Ibu menyetujui fotomu.</p>
+    <div class="map">${items}</div></section>`;
+}
+
+function badgeList(){
+  const q=quests(),out=Object.entries(S.content.strands).map(([k,s])=>{const mine=q.filter(x=>x.strand===k);
+    const done=mine.filter(x=>statusOf(x.id)==="approved").length;return{name:s.badge,sub:s.name,c:strandColor(k),on:mine.length&&done===mine.length,prog:done+"/"+mine.length}});
+  const all=q.filter(x=>statusOf(x.id)==="approved").length;
+  out.push({name:S.content.theme.finalBadge,sub:"Semua quest tema",c:"var(--lantern)",on:all===q.length,prog:all+"/"+q.length});
+  return out;
+}
+function badgesView(){
+  return `<section class="card"><div><div class="eyebrow">Koleksiku</div><h2>Lencana</h2></div>
+  <div class="badges">${badgeList().map((b,i)=>`<div class="badge ${b.on?"on":""}" data-b="${esc(b.name)}" style="--c:${b.c};--i:${i}"><div class="medal">${medalSvg}</div><b>${esc(b.name)}</b><span class="small muted">${esc(b.sub)} · ${b.prog}</span></div>`).join("")}</div></section>`;
+}
+
+function qs(id){return S.q[id]||(S.q[id]={c1:false,c2:false,ans:{},blob:null,preview:""})}
+function questView(){
+  const q=quests(),i=q.findIndex(x=>x.id===S.questId),x=q[i];
+  if(!x)return`<div class="card empty">Quest tidak ditemukan.</div>`;
+  const st=questState(i),c=strandColor(x.strand),L=qs(x.id),sub=S.subs[x.id];
+  const allRight=x.questions.every((qq,k)=>L.ans[k]===qq.answer);
+  const ready=L.c1&&L.c2&&allRight;
+  const [mood,line]=st==="done"?["cheer","Hebat! Quest ini sudah selesai. MasyaAllah!"]
+    :st==="review"?["think","Fotomu sedang dilihat Ayah/Ibu. Sabar ya!"]
+    :ready?["cheer","MasyaAllah, semua jawabanmu benar! Sekarang foto hasil kerjamu."]
+    :L.last==="wrong"?["cheerup","Tidak apa-apa salah. Coba pilih lagi, kamu pasti bisa!"]
+    :st==="retry"?["cheerup","Yuk, kita perbaiki bersama. Baca pesan Ayah/Ibu di bawah."]
+    :["happy","Ayo mulai! Baca ceritanya dulu, lalu kerjakan langkahnya satu per satu."];
+  const head=`<section class="card" style="--c:${c}"><button class="btn ghost" data-act="tab" data-k="map" style="align-self:flex-start">← Peta</button>
+    <div class="eyebrow">Quest ${i+1} · ${esc(S.content.strands[x.strand].name)}</div><h2>${esc(x.title)}</h2>${art(x.id,"art")}${buddy(mood,line)}</section>`;
+  if(st==="done"||st==="review"){
+    return head+`<section class="card"><h3>${st==="done"?"Quest selesai!":"Sedang diperiksa Ayah/Ibu"}</h3>
+      ${photoSrc(sub)?`<img class="photo" src="${esc(photoSrc(sub))}" alt="Foto hasil quest ${esc(x.title)}">`:""}
+      ${st==="done"?`<p class="stars">${starSvg}+${x.stars}</p>`:""}
+      ${sub&&sub.note?`<p class="note"><b>Pesan Ayah/Ibu:</b> ${esc(sub.note)}</p>`:""}</section>`;
+  }
+  const hook=`<div class="step" style="--c:${c}"><div class="saybar"><div class="eyebrow">1 · Cerita pembuka</div>${say(x.id+"-hook",x.hook.text)}</div><p class="hook">${esc(x.hook.text)}</p>
+    ${x.hook.source?`<p class="src">${esc(x.hook.source)}${x.hook.verify?`<span class="verify">cek sumber</span>`:""}</p>`:""}</div>`;
+  const conc=`<div class="step" style="--c:${c}"><div class="saybar"><div><div class="eyebrow">2 · Kerjakan dengan tangan</div><h3>${esc(x.concrete.title)}</h3></div>${say(x.id+"-steps",x.concrete.title+". Siapkan: "+listText(x.concrete.materials)+". "+x.concrete.steps.join(" "))}</div>
+    ${x.safety?`<p class="safety">${esc(x.safety)}</p>`:""}
+    <p class="small"><b>Siapkan:</b> ${x.concrete.materials.map(esc).join(", ")}</p>
+    <ol>${x.concrete.steps.map(s=>`<li>${esc(s)}</li>`).join("")}</ol>
+    <label class="check"><input type="checkbox" id="c1-${x.id}" data-act="check" data-id="${x.id}" data-f="c1" ${L.c1?"checked":""}> Sudah aku lakukan</label></div>`;
+  const pict=`<div class="step" style="--c:${c}"><div class="eyebrow">3 · Gambar</div><div class="saybar"><p>${esc(x.pictorial)}</p>${say(x.id+"-draw",x.pictorial)}</div>
+    <label class="check"><input type="checkbox" id="c2-${x.id}" data-act="check" data-id="${x.id}" data-f="c2" ${L.c2?"checked":""}> Gambarku sudah jadi</label></div>`;
+  const abst=`<div class="step" style="--c:${c}"><div class="eyebrow">4 · Pikirkan</div>${x.questions.map((qq,k)=>{const a=L.ans[k];
+    return `<div class="q"><div class="saybar"><p>${esc(qq.q)}</p>${say(x.id+"-q"+(k+1),qText(qq))}</div><div class="opts">${qq.options.map((o,j)=>`<button class="opt" data-act="answer" data-id="${x.id}" data-k="${k}" data-j="${j}" data-r="${a===j?(j===qq.answer?"right":"wrong"):""}">${esc(o)}</button>`).join("")}</div>
+    ${a===undefined?"":a===qq.answer?`<span class="fb right">Benar! MasyaAllah.</span>`:`<span class="fb wrong">Belum tepat. Coba pilih yang lain ya.</span>`}</div>`}).join("")}</div>`;
+  const canUpload=!!assets||S.local;
+  const foto=`<div class="step" style="--c:${c}"><div class="eyebrow">5 · Kirim foto</div><div class="saybar"><p>${esc(x.photo)}</p>${say(x.id+"-photo",x.photo)}</div>
+    <p class="small muted">Foto hasil kerjamu saja, tidak perlu wajahmu.</p>
+    ${st==="retry"&&sub&&sub.note?`<p class="note"><b>Pesan Ayah/Ibu:</b> ${esc(sub.note)}</p>`:""}
+    ${!ready?`<p class="small muted">Selesaikan langkah 2, 3, dan 4 dulu, lalu tombol foto akan terbuka.</p>`:""}
+    ${L.preview?`<img class="photo" src="${esc(L.preview)}" alt="Pratinjau foto">`:""}
+    ${canUpload?`<div class="row"><label class="file" ${ready?"":"aria-disabled=\"true\" style=\"opacity:.45;pointer-events:none\""}><input type="file" id="f-${x.id}" accept="image/*" data-act="pick" data-id="${x.id}" ${ready?"":"disabled"}>${L.preview?"Ganti foto":"Pilih atau ambil foto"}</label>
+      <button class="btn ok" data-act="submit" data-id="${x.id}" ${ready&&L.blob&&!S.busyUpload?"":"disabled"}>${S.busyUpload?"Mengirim…":"Kirim ke Ayah/Ibu"}</button></div>`
+      :`<p class="note">Akun ini tidak bisa mengunggah foto. Buka aplikasi dengan akun Ayah/Ibu.</p>`}</div>
+    <details><summary>Untuk Ayah/Ibu</summary><p class="small">${esc(x.parentTip)}</p><p class="small muted">Kurikulum: ${esc(x.cp)}</p></details>`;
+  return head+`<section class="card" style="gap:22px">${hook}${conc}${pict}${abst}${foto}</section>`;
+}
+
+/* ---------- parent ---------- */
+function pinView(){
+  const has=!!S.settings.pin;
+  return `<section class="card"><div><div class="eyebrow">Mode Orang Tua</div><h2>${has?"Masukkan PIN":"Buat PIN orang tua"}</h2></div>
+    <p class="muted small">${has?"PIN menjaga halaman pemeriksaan dari ketukan tidak sengaja.":"Pilih 4 angka yang hanya Ayah/Ibu tahu. PIN ini bukan kata sandi keamanan, hanya kunci sederhana di tablet anak."}</p>
+    <form id="pinForm" class="row"><input class="pin" type="password" inputmode="numeric" maxlength="4" id="pinIn" autocomplete="off" aria-label="PIN 4 angka">
+    ${has?"":`<input type="text" id="nameIn" placeholder="Nama panggilan anak" style="max-width:260px" aria-label="Nama panggilan anak">`}
+    <button class="btn" type="submit">${has?"Masuk":"Simpan PIN"}</button></form><p id="pinMsg" class="small" style="color:var(--warn)"></p></section>`;
+}
+function parentView(){
+  if(S.ptab==="ibadah")return ibadahView();
+  if(S.ptab==="progress")return progressView();
+  if(S.ptab==="settings")return settingsView();
+  const list=quests().filter(x=>statusOf(x.id)==="pending");
+  if(!list.length)return `<section class="card empty"><h2>Tidak ada foto yang menunggu</h2><p>Foto quest baru dari anak akan muncul di sini.</p></section>`;
+  return list.map(x=>{const sub=S.subs[x.id];return `<section class="card" style="--c:${strandColor(x.strand)}">
+    <div class="row spread"><div><div class="eyebrow">${esc(S.content.strands[x.strand].name)}</div><h2>${esc(x.title)}</h2></div><span class="small muted">${sub.submittedAt?new Date(sub.submittedAt).toLocaleString("id-ID",{dateStyle:"medium",timeStyle:"short"}):""}</span></div>
+    <div class="review"><div>${photoSrc(sub)?`<img class="photo" src="${esc(photoSrc(sub))}" alt="Foto kiriman anak untuk ${esc(x.title)}">`:`<div class="photo empty">Tanpa foto</div>`}</div>
+    <div class="card" style="border:none;padding:0"><p class="small"><b>Yang diminta:</b> ${esc(x.photo)}</p><p class="small muted">${esc(x.parentTip)}</p>
+      <label class="small" for="n-${x.id}"><b>Pesan untuk anak</b> (wajib jika minta coba lagi)</label>
+      <textarea id="n-${x.id}" rows="3" placeholder="Contoh: Bagus! Coba tambahkan nama di bawah gambarnya ya."></textarea>
+      <div class="row"><button class="btn ok" data-act="approve" data-id="${x.id}">Setujui (+${x.stars} bintang)</button><button class="btn warn" data-act="retry" data-id="${x.id}">Minta coba lagi</button></div></div></div></section>`}).join("");
+}
+function ibadahView(){
+  return `<section class="card"><div><div class="eyebrow">Hari ini · ${new Date().toLocaleDateString("id-ID",{weekday:"long",day:"numeric",month:"long"})}</div><h2>Nyalakan lentera</h2></div>
+  <p class="muted small">Ketuk untuk menyalakan penuh amalan yang sudah dikerjakan anak. Ketuk lagi untuk mematikan. Tidak ada poin dan tidak ada hukuman: lentera hanya pengingat lembut.</p>
+  ${lanternsHTML(dkey(),"parent")}<div class="eyebrow">7 malam terakhir</div>${weekHTML()}</section>`;
+}
+function progressView(){
+  const q=quests(),done=q.filter(x=>statusOf(x.id)==="approved").length;
+  const lab={none:"Belum",pending:"Menunggu diperiksa",retry:"Coba lagi",approved:"Selesai"};
+  const verify=q.filter(x=>x.hook.verify);
+  return `<section class="card"><div class="row spread"><div><div class="eyebrow">${esc(S.content.theme.title)}</div><h2>${done} dari ${q.length} quest selesai</h2></div><span class="stars">${starSvg}${starsTotal()}</span></div>
+    <div class="tablewrap"><table><thead><tr><th>#</th><th>Quest</th><th>Bidang</th><th>Status</th></tr></thead><tbody>
+    ${q.map((x,i)=>`<tr><td>${i+1}</td><td>${esc(x.title)}<div class="small muted">${esc(x.cp)}</div></td><td><span class="chip" style="--c:${strandColor(x.strand)}">${esc(S.content.strands[x.strand].name)}</span></td><td>${lab[statusOf(x.id)]}</td></tr>`).join("")}
+    </tbody></table></div></section>
+  <section class="card"><div><div class="eyebrow">Sebelum dipakai anak</div><h2>Sumber yang perlu Ayah/Ibu cek</h2></div>
+    <p class="small muted">Makna ayat di aplikasi ini ditulis ringkas. Cocokkan dengan terjemahan resmi di quran.kemenag.go.id dan sesuaikan teksnya bila perlu.</p>
+    <ul>${verify.map(x=>`<li><b>${esc(x.hook.source)}</b>: quest "${esc(x.title)}"</li>`).join("")}</ul></section>`;
+}
+function settingsView(){
+  return `<section class="card"><div><div class="eyebrow">Pengaturan</div><h2>Profil & PIN</h2></div>
+    <form id="setForm" style="display:flex;flex-direction:column;gap:12px;max-width:360px">
+      <label class="small" for="setName"><b>Nama panggilan anak</b></label><input type="text" id="setName" value="${esc(S.settings.childName||"")}">
+      <label class="small" for="setPin"><b>PIN baru</b> (kosongkan jika tidak diganti)</label><input class="pin" type="password" inputmode="numeric" maxlength="4" id="setPin" autocomplete="off">
+      <button class="btn" type="submit">Simpan</button><p id="setMsg" class="small"></p></form></section>
+  <section class="card"><div><div class="eyebrow">Tampilan anak</div><h2>Suara & Animasi</h2></div><div class="toggles">
+    <label class="check"><input type="checkbox" data-act="pref" data-f="sound" ${S.settings.sound!==false?"checked":""}> Efek suara</label>
+    <label class="check"><input type="checkbox" data-act="pref" data-f="motion" ${S.settings.motion!==false?"checked":""}> Animasi & konfeti</label></div></section>
+  <section class="card"><p class="small muted">${S.local?"Mode perangkat ini saja: data tersimpan di browser ini.":"Data tersimpan di aplikasi dan tersambung antara tablet anak dan HP orang tua."}</p></section>`;
+}
+
+/* ---------- photo ---------- */
+async function shrink(file,max){
+  const url=URL.createObjectURL(file);
+  try{const img=new Image();await new Promise((r,j)=>{img.onload=r;img.onerror=j;img.src=url});
+    const s=Math.min(1,max/Math.max(img.naturalWidth,img.naturalHeight));const cv=document.createElement("canvas");
+    cv.width=Math.round(img.naturalWidth*s);cv.height=Math.round(img.naturalHeight*s);cv.getContext("2d").drawImage(img,0,0,cv.width,cv.height);
+    return await new Promise(r=>cv.toBlob(r,"image/jpeg",0.82));
+  }catch(e){return /^image\/(jpeg|png|webp|gif)$/.test(file.type)?file:null}finally{URL.revokeObjectURL(url)}
+}
+const toDataURL=b=>new Promise(r=>{const f=new FileReader();f.onload=()=>r(f.result);f.readAsDataURL(b)});
+
+/* ---------- events ---------- */
+document.addEventListener("click",async e=>{
+  const el=e.target.closest("[data-act]");if(!el||el.tagName==="INPUT")return;
+  const a=el.dataset.act,id=el.dataset.id;
+  if(a==="say"){if(el.classList.contains("on")){stopSpeech();return}speak(el.dataset.k,el.dataset.t,el.classList.contains("say")?el:null);return}
+  if(a!=="answer")stopSpeech();
+  if(a==="toggleMode"){S.mode=S.mode==="child"?"parent":"child";S.parentOk=false;render();window.scrollTo(0,0);return}
+  if(a==="tab"){if(S.mode==="child"){S.view=el.dataset.k}else S.ptab=el.dataset.k;render();window.scrollTo(0,0);return}
+  if(a==="open"){sfx("pop");S.questId=id;S.view="quest";render();window.scrollTo(0,0);return}
+  if(a==="answer"){const k=+el.dataset.k,j=+el.dataset.j,x=quests().find(q=>q.id===id),right=!!x&&x.questions[k].answer===j,L=qs(id);
+    L.ans[k]=j;L.last=right?"right":"wrong";render();
+    const b=document.querySelector(`.opt[data-id="${id}"][data-k="${k}"][data-j="${j}"]`);
+    if(right){sfx("ding");oneShot(b,"pop");tetes("jump");if(b)confetti(...ctr(b),28)}
+    else{sfx("boop");oneShot(b,"shake");tetes("tilt")}
+    return}
+  if(a==="childHabit"||a==="confirmHabit"){if(S.readonly)return;const d=el.dataset.d,k=el.dataset.k,it=Object.assign({},habitItems(d));
+    if(a==="childHabit"){if(it[k]==="confirmed")return; if(it[k]==="child")delete it[k]; else it[k]="child"}
+    else{if(it[k]==="confirmed")delete it[k]; else it[k]="confirmed"}
+    saveHabitDay(d,it);
+    if(it[k]){sfx(it[k]==="confirmed"?"ding":"pop");oneShot(document.querySelector(`.lamp[data-k="${k}"][data-d="${d}"]`),"lit")}
+    return}
+  if(a==="submit"){await submit(id);return}
+  if(a==="approve"||a==="retry"){const note=(document.getElementById("n-"+id)||{}).value||"";
+    if(a==="retry"&&!note.trim()){setNote("Tulis pesan singkat supaya anak tahu apa yang perlu diperbaiki.");document.getElementById("n-"+id).focus();return}
+    setNote("");const sub=Object.assign({},S.subs[id],{status:a==="approve"?"approved":"retry",note:note.trim(),reviewedAt:new Date().toISOString()});
+    if(a==="retry")delete qs(id).blob;
+    if(a==="approve"){sfx("fanfare");const[x,y]=ctr(el);confetti(x,y,40)}
+    saveSub(id,sub);return}
+});
+document.addEventListener("change",async e=>{
+  const el=e.target;if(!el.dataset||!el.dataset.act)return;
+  if(el.dataset.act==="check"){qs(el.dataset.id)[el.dataset.f]=el.checked;if(el.checked)sfx("pop");render();return}
+  if(el.dataset.act==="pref"){saveSettings({[el.dataset.f]:el.checked});if(el.dataset.f==="sound"&&el.checked)sfx("ding");return}
+  if(el.dataset.act==="pick"&&el.files&&el.files[0]){const L=qs(el.dataset.id);
+    const b=await shrink(el.files[0],1400);if(!b){setNote("Format foto ini tidak bisa dibaca. Coba ambil foto dengan kamera biasa (JPG).");return}
+    L.blob=b;if(L.preview&&L.preview.startsWith("blob:"))URL.revokeObjectURL(L.preview);L.preview=URL.createObjectURL(b);setNote("");render()}
+});
+async function submit(id){
+  const L=qs(id);if(!L.blob||S.busyUpload)return;S.busyUpload=true;render();
+  try{const base={questId:id,status:"pending",note:"",submittedAt:new Date().toISOString()};
+    if(assets){const r=await assets.upload(L.blob,{type:"image/jpeg"});saveSub(id,Object.assign(base,{photoId:r.id}))}
+    else{const small=(await shrink(L.blob,1000))||L.blob;
+      try{await idbPut(id,small);showLocalPhoto(id,small);saveSub(id,Object.assign(base,{photoLocal:true}))}
+      catch(e){const tiny=await shrink(L.blob,480);saveSub(id,Object.assign(base,{photoData:await toDataURL(tiny||L.blob)}))}}
+    L.blob=null;L.preview="";setNote("");sfx("whoosh");confetti(innerWidth/2,innerHeight/2,40);
+  }catch(err){const c=err&&err.code;
+    setNote(c==="too_large"?"Foto terlalu besar. Coba foto lagi dari jarak sedikit lebih jauh.":c==="quota_or_state"?"Penyimpanan foto penuh. Minta Ayah/Ibu menghapus foto lama.":c==="rate_limited"?"Terlalu cepat. Tunggu sebentar, lalu kirim lagi.":"Foto gagal terkirim. Periksa internet, lalu coba lagi.")}
+  finally{S.busyUpload=false;render()}
+}
+document.addEventListener("submit",e=>{
+  e.preventDefault();
+  if(e.target.id==="pinForm"){const v=$("#pinIn").value.trim(),msg=$("#pinMsg");
+    if(!/^\d{4}$/.test(v)){msg.textContent="PIN harus 4 angka.";return}
+    if(S.settings.pin){if(v===S.settings.pin){S.parentOk=true;S.ptab="review";render()}else msg.textContent="PIN salah. Coba lagi."}
+    else{const n=($("#nameIn")||{}).value||"";saveSettings({pin:v,childName:n.trim()});S.parentOk=true;S.ptab="review";render()}}
+  if(e.target.id==="setForm"){const n=$("#setName").value.trim(),p=$("#setPin").value.trim();
+    if(p&&!/^\d{4}$/.test(p)){$("#setMsg").textContent="PIN harus 4 angka.";return}
+    const o={childName:n};if(p)o.pin=p;saveSettings(o);setNote("Pengaturan tersimpan.")}
+});
+boot();
+})();
+</script>
